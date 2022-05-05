@@ -1,0 +1,28 @@
+version: "3"
+services:
+  ubuntu-base:
+    build: ./jupyter_base
+    image: jupyter-base
+    container_name: jupyter-base
+    ports:
+      - 8888:8888
+    volumes:
+      - ./jupyter_base/tasks:/src/tasks
+    tty: true
+  hdfs-base:
+    build: ./hdfs_base
+    image: hadoop-base
+    hostname: hdfs_host
+    container_name: hadoop-base
+    ports:
+        - 9870:9870
+        - 9864:9864
+        - 8088:8088
+        - 8877:8899
+        - 9000:9000
+    tty: true
+
+#todo add env files for different services
+#env_file:
+#  - ./hadoop.env
+

@@ -1,0 +1,22 @@
+version: "3"
+services:
+  ubuntu-base:
+    build: ./jupyter_base
+    image: jupyter-base
+    container_name: jupyter-base
+    ports:
+      - 8888:8888
+    volumes:
+      - ./jupyter_base/tasks:/src/tasks
+    tty: true
+  example:
+    build: ./exmple
+    hostname: exx
+    image: exx
+    container_name: exx
+    tty: true
+
+#todo add env files for different services
+#env_file:
+#  - ./hadoop.env
+
