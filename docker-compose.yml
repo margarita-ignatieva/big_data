@@ -12,7 +12,6 @@ services:
   hdfs-base:
     build: ./hdfs_base
     image: hadoop-base
-    hostname: hdfs_host
     container_name: hadoop-base
     ports:
         - 9870:9870
@@ -21,7 +20,15 @@ services:
         - 8877:8899
         - 9000:9000
     tty: true
-
+  spark:
+    build: ./spark_base
+    image: spark-base
+    container_name: hadoop-base
+    ports:
+        - 8080:8080
+        - 7077:7077
+    tty: true
+#todo add hbase and airflow && kafka ffffffffffffffuck
 #todo add env files for different services
 #env_file:
 #  - ./hadoop.env

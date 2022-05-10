@@ -1,0 +1,60 @@
+FROM hadoop-base
+
+#according to https://phoenixnap.com/kb/install-hive-on-ubuntu
+
+#todo check where we'll be
+#maybe its not a good idea to strart all as entrypoint in hadoop
+
+ENV HIVE_VERSION 3.1.2
+
+#todo rename to short hive folder with mv command
+RUN sudo wget https://downloads.apache.org/hive/hive-${HIVE_VERSION}/apache-hive-${HIVE_VERSION}-bin.tar.gz && \
+    sudo tar xzf apache-hive-${HIVE_VERSION}-bin.tar.gz && sudo  rm apache-hive-${HIVE_VERSION}-bin.tar.gz
+
+#todo maybe need another user to run hive explicitly
+RUN  sudo chown -R $HDFS_USER:hadoop /usr/local/apache-hive-${HIVE_VERSION}-bin && \
+sudo  chmod -R 777 /usr/local/apache-hive-${HIVE_VERSION}-bin
+
+RUN echo 'export HIVE_HOME=/usr/local/apache-hive-3.1.2-bin' >> ~/.bashrc
+RUN echo 'export PATH=$PATH:$HIVE_HOME/bin' >> ~/.bashrc
+RUN . ~/.bashrc
+
+#OR can we use export HADOOP_HOME=$HADOOP_HOME
+RUN sudo echo 'export HADOOP_HOME=/usr/local/hadoop' >> $HIVE_HOME/bin/hive-config.sh
+
+
+#todo need running hdfs to add tmp directory - or just run it befor all at the beginning
+#todo need explicit port mapping here too?? for hdfs or not
+#for following commands running hdfs needed
+
+
+#create tmp directory for hive
+RUN hdfs dfs -mkdir /tmp && hdfs dfs -chmod g+w /tmp &&
+#create hive warehouse directory
+RUN hdfs dfs -mkdir -p /user/hive/warehouse && hdfs dfs -chmod g+w /user/hive/warehouse
+#alter hive-site.xml
+RUN cd $HIVE_HOME/conf && cp hive-default.xml.template hive-site.xml 
+#need to alter this thing in hive-site.xml 
+#https://stackoverflow.com/questions/52783323/hive-throws-wstxparsingexception-illegal-character-entity-expansion-character
+#try with sed
+
+RUN cd apache-hive-3.1.2-bin && $HIVE_HOME/bin/schematool -dbType derby -initSchema
+
+#start beeline or fix this https://blog.csdn.net/wangbaomi/article/details/108326482
+#add following to hive-site.xml  https://www.edureka.co/community/63181/exception-illegalargumentexception-urisyntaxexception
+<property>
+    <name>system:java.io.tmpdir</name>
+    <value>/tmp/hive/java</value>
+  </property>
+  <property>
+    <name>system:user.name</name>
+    <value>${user.name}</value>
+  </property>
+
+#fix this hive exception https://sparkbyexamples.com/apache-hive/hive-hiveexception-runtimeexception-unable-to-instantiate-sessionhivemetastoreclient/
+
+
+
+#SUCCESSS!!!!!!!!!!!!!
+
+

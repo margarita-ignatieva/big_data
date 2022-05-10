@@ -1,0 +1,3 @@
+FROM hadoop-base
+
+

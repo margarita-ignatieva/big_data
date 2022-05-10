@@ -17,7 +17,7 @@ ARG NOTEBOOK_USER=JUPY
 # =============================================================================
 # ========== Create HDFS user 
 # =============================================================================
-FROM jupyter-base AS base
+FROM ubuntu_base AS base
 
 ENV HDFS_USER hdfs_user
 ENV PASS hdfs
@@ -107,30 +107,30 @@ RUN sudo apt-get update && sudo apt-get install --no-install-recommends -y wget 
 #todo add new variables with a sh script
 # this added to one run command
 # not sure we need them so much
-RUN printf 'export JAVA_HOME=/opt/${JAVA_SYMLINK_NAME}\n \
-export PATH=$PATH:$JAVA_HOME/bin\n \
-export HADOOP_VERSION=3.3.1\n \
-export HDFS_USER=hdfs_user\n \
-export HADOOP_HOME=/usr/local/hadoop\n \
-export HADOOP_CONF_DIR=/usr/local/hadoop/etc/hadoop\n \
-export HADOOP_MAPRED_HOME=/usr/local/hadoop\n \
-export HADOOP_COMMON_HOME=/usr/local/hadoop\n \
-export HADOOP_HDFS_HOME=/usr/local/hadoop\n \
-export YARN_HOME=/usr/local/hadoop\n \
-export PATH=$PATH:/usr/local/hadoop/bin\n \
-export PATH=$PATH:/usr/local/hadoop/sbin\n \
-export HADOOP_COMMON_LIB_NATIVE_DIR=$HADOOP_HOME/lib/native\n \
+RUN printf 'export JAVA_HOME=/opt/${JAVA_SYMLINK_NAME}\n\ 
+export PATH=$PATH:$JAVA_HOME/bin\n\
+export HADOOP_VERSION=3.3.1\n\ 
+export HDFS_USER=hdfs_user\n\ 
+export HADOOP_HOME=/usr/local/hadoop\n\ 
+export HADOOP_CONF_DIR=/usr/local/hadoop/etc/hadoop\n\ 
+export HADOOP_MAPRED_HOME=/usr/local/hadoop\n\ 
+export HADOOP_COMMON_HOME=/usr/local/hadoop\n\ 
+export HADOOP_HDFS_HOME=/usr/local/hadoop\n\ 
+export YARN_HOME=/usr/local/hadoop\n\ 
+export PATH=$PATH:/usr/local/hadoop/bin\n\ 
+export PATH=$PATH:/usr/local/hadoop/sbin\n\ 
+export HADOOP_COMMON_LIB_NATIVE_DIR=$HADOOP_HOME/lib/native\n\ 
 export HADOOP_OPTS="-Djava.library.path=$HADOOP_HOME/lib"' >> ~/.bashrc && . ~/.bashrc
-#change hadoop prefix for hadoop home everywhere
 
-RUN printf 'export HADOOP_OPTS=-Djava.net.preferIPv4Stack=true\n \
-export JAVA_HOME=/opt/jre-8\n \
-export HADOOP_OPTS="$HADOOP_OPTS -Djava.net.preferIPv4Stack=true -Djava.security.krb5.realm= -Djava.security.krb5.kdc="\n \
+RUN printf 'export HADOOP_OPTS=-Djava.net.preferIPv4Stack=true\n 
+export JAVA_HOME=/opt/jre-8\n 
+export HADOOP_OPTS="$HADOOP_OPTS -Djava.net.preferIPv4Stack=true -Djava.security.krb5.realm= -Djava.security.krb5.kdc="\n 
 export HADOOP_HOME_WARN_SUPPRESS="TRUE" ' >> /usr/local/hadoop/etc/hadoop/hadoop-env.sh
 
 #copy config files and startup file to destination
 #TODO - implement sh script to update those values like here
 # https://github.com/Marcel-Jan/docker-hadoop-spark/blob/master/base/entrypoint.sh
+#add proxy users to core sites  as from here https://docs.cloudera.com/documentation/enterprise/6/6.3/topics/admin_hdfs_proxy_users.html#:~:text=Hadoop%20allows%20you%20to%20configure%20proxy%20users%20to,than%20those%20of%20a%20superuser%20%28such%20as%20hdfs%29.
 COPY core-site.xml /usr/local/hadoop/etc/hadoop/
 COPY hdfs-site.xml /usr/local/hadoop/etc/hadoop/
 COPY yarn-site.xml /usr/local/hadoop/etc/hadoop/
@@ -141,7 +141,7 @@ COPY bootstrap_hadoop.sh /usr/local/
  
 #remote_ikernel manage --add \
 #    --name="test-kernel" \
-#    --kernel_cmd="ipython kernel -f {connection_file}" \
+#    --kernel_cmd="ipython kernel -f {connection_file} && echo "HEy"" \
 #    --interface=ssh \
 #    --host=some@exam
 
